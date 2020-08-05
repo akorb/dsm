@@ -1,0 +1,23 @@
+#!/bin/sh
+# dsm = diff send mail
+
+usage="$(basename "$0") FILE SUBJECT EMAIL-ADDRESS\nSend mail if stdin differs from content of given file\n"
+
+if [ "$#" -ne 3 ]; then
+  printf "$usage"
+  exit
+fi
+
+input=$(</dev/stdin)
+
+echo "$input" | diff - "$1" > /dev/null
+
+if [ $? -eq 1 ]
+then
+  echo "$input" > "$1"
+  echo "$input" | mail -s "$2" "$3"
+  echo "email sent"
+else
+  echo "email not sent"
+fi
+
